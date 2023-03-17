@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>烧纸钱</title>
+  <meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      background-color: black;
+    }
+    h1, h2 {
+      color: white;
+	  position: relative;
+      left: 40%;
+	  z-index: 1;
+    }
+	  
+	      #p {
+      font-size: 100%;
+      color: white;
+	  top: 70%;
+      left: 40%;
+	  z-index: 1;
+	  }
+	  
+	  
+	   #p2 {
+      font-size: 100%;
+      color: white;
+	  top: 70%;
+      left: 40%;
+	  z-index: 1;
+	  }
+	  
+    #counter {
+	 	  position: relative;
+      top: 50%;
+      left: 40%;
+      font-size: 100%;
+      color: white;
+	  z-index: 1;
+    }
+    #money {
+      width: 60%;
+      position: absolute;
+      top: 40%;
+      left: 40%;
+      z-index: 1;
+    }
+  #fire {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+  }
+  /* 在移动端，让 money 更大 */
+  @media (max-width: 768px) {
+    #money {
+      width: 300%;
+    }
+  }
+	  
+.fire2 {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+}
+	  
+	  .windowEL {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 190px;
+  height: 210px;
+  background-color: transparent;
+  border-radius: 20px;
+  border: 22px solid gold;
+}
+
+	#xiangkuang {
+			position: absolute;
+			top: 0;
+			left: 0;
+		      width: 200px;
+  height: 250px;
+			z-index: 100;
+		
+		}
+  </style>
+</head>
+<body>
+  <h1>赛博烧纸钱</h1>
+  <h2>点击屏幕烧纸钱</h2>
+  <p id="counter">一定时间不加纸钱火会熄灭。<br>纸钱一次加太多会火力全开。<br>
+	  火灭后纸钱归零，因为你的心不诚【。<br>
+	虽然纸钱素材瞎做的，但还是帮我烧点，谢谢。</p>
+
+  <img id="money" src="money.gif" alt="money">
+  <img id="fire" src="fire.gif" alt="fire">
+	
+  <div id="draggable-window" style="position: absolute; top: 0; left: 0;">
+  <canvas id="canvas" width="190" height="250"></canvas>
+<img id="xiangkuang" src="xiangkuang.png" width="210" height="210">
+</div>
+	
+	
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.5.0/fabric.min.js"></script>
+  <script>
+    var counter = 0;
+    var fireElement = document.getElementById('fire');
+    var moneyElement = document.getElementById('money');
+
+    // 点击事件处理函数
+    function clickHandler() {
+      counter++;
+      document.getElementById('counter').textContent = "冥币金额：" + counter*1000000 + " 圆";
+      showMoney();
+      if (counter >= 10) {
+        showFire2();
+      } else {
+        showFire();
+      }
+    }
+
+    // 显示 money.gif
+    function showMoney() {
+      moneyElement.style.display = 'block';
+      setTimeout(hideMoney, 500);
+    }
+
+    // 隐藏 money.gif
+    function hideMoney() {
+      moneyElement.style.display = 'none';
+    }
+
+    // 显示 fire.gif
+    function showFire() {
+      fireElement.src = 'fire.gif';
+      fireElement.style.display = 'block';
+      setTimeout(hideFire, 30000);
+    }
+
+    // 隐藏 fire.gif
+    function hideFire() {
+      fireElement.style.display = 'none';
+    }
+
+    // 显示 fire2.gif
+    function showFire2() {
+      fireElement.src = 'fire2.gif';
+      fireElement.style.display = 'block';
+      setTimeout(hideFire, 20000);
+      setTimeout(resetCounter, 20000);
+    }
+
+    // 重置计数器
+    function resetCounter() {
+      counter = 0;
+      document.getElementById('counter').textContent = counter;
+    }
+
+    // 监听点击事件
+    document.addEventListener('click', clickHandler);
+
+    // 初始化
+    hideFire();
+	hideMoney();
+	  
+	  
+	  
+	// 获取窗口和画布元素
+  var windowEl = document.getElementById('draggable-window');
+  var canvasEl = document.getElementById('canvas');
+
+  // 初始化 fabric.js 画布对象
+  var canvas = new fabric.Canvas(canvasEl, {
+    // 设置画布背景色
+    backgroundColor: 'transparent',
+	 
+    // 禁用选择功能，避免影响拖动
+    selection: false,
+	    lockScalingRatio: true // 锁定长宽比
+  });
+
+  // 设置窗口可以被拖动
+  var isDragging = false;
+  var startX, startY, initialX, initialY;
+  windowEl.addEventListener('mousedown', function(e) {
+    startX = e.clientX;
+    startY = e.clientY;
+    initialX = windowEl.offsetLeft;
+    initialY = windowEl.offsetTop;
+    isDragging = true;
+  });
+  windowEl.addEventListener('mouseup', function(e) {
+    isDragging = false;
+  });
+  windowEl.addEventListener('mousemove', function(e) {
+    if (isDragging) {
+      e.preventDefault();
+      var dx = e.clientX - startX;
+      var dy = e.clientY - startY;
+      var newX = Math.max(0, initialX + dx);
+      var newY = Math.max(0, initialY + dy);
+      newX = Math.min(newX, window.innerWidth - windowEl.offsetWidth);
+      newY = Math.min(newY, window.innerHeight - windowEl.offsetHeight);
+      windowEl.style.left = newX + 'px';
+      windowEl.style.top = newY + 'px';
+    }
+  });
+
+  // 添加上传图片功能
+  var inputEl = document.createElement('input');
+  inputEl.type = 'file';
+  inputEl.accept = 'image/*';
+  inputEl.style.display = 'none';
+  inputEl.addEventListener('change', function(e) {
+    var file = e.target.files[0];
+    var reader = new FileReader();
+    reader.onload = function(f) {
+      var data = f.target.result;
+      fabric.Image.fromURL(data, function(img) {
+        // 设置图片显示大小
+        img.scaleToWidth(190);
+        img.scaleToHeight(210);
+		// 将上传的图片居中对齐
+		  img.center();
+
+        canvas.clear();
+        canvas.add(img);
+        canvas.centerObject(img);
+        canvas.renderAll();
+		 img.set({
+			 lockScalingX: true,
+            lockScalingY: true
+
+          });
+
+		  
+		  // 加载xiangkuang.png图片
+fabric.Image.fromURL('xiangkuang.png', function(img) {
+  // 设置图片宽高比例为2:2.5
+  img.set({
+    scaleX: 2,
+    scaleY: 2.5
+	
+	
+  });
+  // 将图片添加到窗口中
+
+  img.bringToFront();
+});
+		  
+      });
+    }
+    reader.readAsDataURL(file);
+  });
+
+  // 添加上传图片按钮
+  var buttonEl = document.createElement('button');
+
+buttonEl.style.backgroundColor = 'transparent'; 
+buttonEl.style.backgroundImage = "url('anniu.png')"; // 设置背景图像
+buttonEl.style.backgroundSize = '30px 30px'; // 设置背景图像大小
+buttonEl.style.border = 'none'; // 去掉边框
+buttonEl.style.padding = '15px 16px'; // 添加内边距
+buttonEl.style.fontWeight = 'bold'; // 加粗文字
+  buttonEl.addEventListener('click', function(e) {
+    inputEl.click();
+  });
+
+  // 将上传图片按钮添加到窗口中
+  windowEl.appendChild(buttonEl);
+	  
+	  // 监听上传的图片加载完成事件
+uploadedImg.on('load', function() {
+  // 获取xiangkuang图片的位置和大小信息
+  const xkWidth = xkImg.width * xkImg.scaleX;
+  const xkHeight = xkImg.height * xkImg.scaleY;
+  const xkLeft = xkImg.left;
+  const xkTop = xkImg.top;
+
+  // 获取上传的图片的位置和大小信息
+  const upWidth = uploadedImg.width * uploadedImg.scaleX;
+  const upHeight = uploadedImg.height * uploadedImg.scaleY;
+
+  // 计算上传的图片需要移动的距离
+  const dx = xkLeft + xkWidth / 2 - upWidth / 2;
+  const dy = xkTop + xkHeight / 2 - upHeight / 2;
+
+  // 设置上传的图片的位置为居中位置
+  uploadedImg.set({
+    left: dx,
+    top: dy
+  });
+
+  // 刷新画布，显示修改后的位置
+  canvas.renderAll();
+});
+
+  </script>
+</body>
+</html>
