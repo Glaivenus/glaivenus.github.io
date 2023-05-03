@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Untitled Document</title>
+</head>
+
+<body>
+	<canvas id="canvasBox" width="600" height="600" style="border: 1px solid #ccc;"></canvas>
+
+<!-- 引入 Fabric.js -->
+<script src="https://cdn.bootcdn.net/ajax/libs/fabric.js/521/fabric.js"></script>
+
+<script>
+  const canvas = new fabric.Canvas('canvasBox')
+  
+  const iText = new fabric.IText('', {
+    left: 100, // 输入框离画布左侧距离
+    top: 100, // 输入框离画布顶部距离
+    padding: 7 // 设置输入框内边距
+  })
+  
+  canvas.add(iText).setActiveObject(iText)
+
+iText.enterEditing()
+</script>
+</body>
+</html>
