@@ -7,9 +7,20 @@
     <title>遇到的问题</title>
 </head>
 <body>
-    <h1>我的代码：</h1>
-    <h3>2023年5月3日问题：</h3>
-    <a href="../0503/index.html">代码效果</a>
-    <a href="">代码文本</a>
+    <h1>遇到的代码：</h1>
+    <h3>2023年5月3日问题：旋转和位移的轨迹有点奇怪</h3>
+    <button id="load-content">点击加载内容</button>
+    <a href="https://github.com/Glaivenus/glaivenus.github.io/blob/master/0503/index.html">代码文本</a>
+    <div id="content-container" style="display: none;">
+        <iframe id="content-iframe" src="" frameborder="0" style="width: 100%; height: 500px;"></iframe>
+    </div>
+
+    <script>
+        document.getElementById("load-content").addEventListener("click", function() {
+            var iframe = document.getElementById("content-iframe");
+            iframe.src = "../0503/index.html";
+            document.getElementById("content-container").style.display = "block";
+        });
+    </script>
 </body>
 </html>
